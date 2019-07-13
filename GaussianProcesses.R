@@ -47,29 +47,38 @@ calcSigma <- function(X1,X2,l=1) {
 # as shown in Figure 2.2(a)
 
 # Define the points at which we want to define the functions
+# some sample input values, uniformly distributed
 x.star <- seq(-5,5,len=50)
 
 # Calculate the covariance: n x n matrix
 sigma <- calcSigma(x.star,x.star)
 
 # Generate a number of functions from the process
-n.samples <- 3
+# n.samples defines the number of functions that should be sample from the GP
+# First: create a empty matrix with dimension: nrows: number of x.values drawn; ncols: number of functions to be drawn 
+# Idea: for each drawn functions draw the function values corresponding to the before drawn input values
+n.samples <- 100
 values <- matrix(rep(0,length(x.star)*n.samples), ncol=n.samples)
 for (i in 1:n.samples) {
   # Each column represents a sample from a multivariate normal distribution
   # with zero mean and covariance sigma
   values[,i] <- mvrnorm(1, rep(0, length(x.star)), sigma)
 }
+
+## merge the x.star values to the function values
 values <- cbind(x=x.star,as.data.frame(values))
 values <- melt(values,id="x")
 
-# Plot the result
+# Plot the result: correspond to the prior GP distributed functions
 fig2a <- ggplot(values,aes(x=x,y=value)) +
   geom_rect(xmin=-Inf, xmax=Inf, ymin=-2, ymax=2, fill="grey80") +
-  geom_line(aes(group=variable)) +
+  geom_line(aes(group=variable, color = variable)) +
   theme_bw() +
   scale_y_continuous(lim=c(-2.5,2.5), name="output, f(x)") +
-  xlab("input, x")
+  xlab("input, x") +
+  theme(legend.position="none")
+
+fig2a
 
 # 2. Now let's assume that we have some known data points;
 # this is the case of Figure 2.2(b). In the book, the notation 'f'
@@ -79,7 +88,6 @@ f <- data.frame(x=c(-4,-3,-1,0,2),
                 y=c(-2,0,1,2,-1))
 
 # Calculate the covariance matrices
-# using the same x.star values as above
 x <- f$x
 k.xx <- calcSigma(x,x)
 k.xxs <- calcSigma(x,x.star)
@@ -113,6 +121,7 @@ fig2b <- ggplot(values,aes(x=x,y=value)) +
   scale_y_continuous(lim=c(-3,3), name="output, f(x)") +
   xlab("input, x")
 
+fig2b
 # 3. Now assume that each of the observed data points have some
 # normally-distributed noise.
 
