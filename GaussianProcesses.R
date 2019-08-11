@@ -21,7 +21,7 @@ require(ggplot2)
 
 # Set a seed for repeatable plots
 set.seed(12345)
-
+_
 # Calculates the covariance matrix sigma using a
 # simplified version of the squared exponential function.
 #
@@ -57,7 +57,7 @@ sigma <- calcSigma(x.star,x.star)
 # n.samples defines the number of functions that should be sample from the GP
 # First: create a empty matrix with dimension: nrows: number of x.values drawn; ncols: number of functions to be drawn 
 # Idea: for each drawn functions draw the function values corresponding to the before drawn input values
-n.samples <- 100
+n.samples <- 10
 values <- matrix(rep(0,length(x.star)*n.samples), ncol=n.samples)
 for (i in 1:n.samples) {
   # Each column represents a sample from a multivariate normal distribution
@@ -86,6 +86,8 @@ fig2a
 # easier later on.
 f <- data.frame(x=c(-4,-3,-1,0,2),
                 y=c(-2,0,1,2,-1))
+
+
 
 # Calculate the covariance matrices
 x <- f$x
@@ -149,3 +151,6 @@ gg <- ggplot(values, aes(x=x,y=value)) +
   theme_bw() +
   scale_y_continuous(lim=c(-3,3), name="output, f(x)") +
   xlab("input, x")
+
+
+gg
